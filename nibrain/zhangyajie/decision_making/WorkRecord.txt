@@ -1,0 +1,7 @@
+#
+work record 2.1-2.7
+overal working hours: 30 h
+the number of papers: 2(3), 2(2), 1(1)
+code: modifying 'probablistic_map' written by Masai
+process: clear for next step? (actually I don't think I have some process)
+#
