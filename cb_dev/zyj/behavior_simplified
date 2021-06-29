@@ -1,0 +1,46 @@
+"""
+Created on Tue Jun 29 12:25:12 2021
+
+@author: zhangyajie
+"""
+import pandas as pd
+
+sim_path = "D:/hcpd/hcpd_simplified/behavior_simplified_dictionary.xlsx"
+sim = pd.read_excel(sim_path)
+sim_dict = dict()
+sim_df_dict = dict()
+df_dict = dict()
+aggre_dict = dict()
+for ind,row in sim.iterrows():
+    sim_dict[row[0]] = row[2]
+    sim_df_dict[row[0]] = pd.DataFrame()
+    aggre_dict[row[0]] = ''
+for key, value in sim_dict.items():
+    sim_dict[key] = value.split(',')
+
+beh_dir = "D:/hcpd/"
+for file, inds in sim_dict.items():
+    df_dict[file] = pd.read_table(beh_dir+f'{file}.txt')
+
+for name, df in sim_df_dict.items():
+    for file,elements in sim_dict.items():
+        if name == file:
+            for ele in elements:
+                df[ele] = df_dict[file][ele]
+for name, df in sim_df_dict.items():
+    sim_df_dict[name] = df.drop(df.index[0]).fillna('0')
+  
+for file, elements in sim_dict.items():
+    aggre_dict[file] = dict()
+    for ele in elements:
+        if ele not in ['src_subject_id','interview_age','sex']:
+            aggre_dict[file][ele] = 'sum'
+        elif ele in ['sex','interview_age']:
+            aggre_dict[file][ele] = 'first'
+
+for n, aggre in aggre_dict.items():
+        sim_df_dict[n] = sim_df_dict[n].groupby('src_subject_id', as_index=False).aggregate(aggre).reindex(columns=sim_df_dict[n].columns)
+
+sim_dir = 'D:/hcpd/hcpd_simplified/'
+for name, df in sim_df_dict.items():
+    df.to_csv(sim_dir+f'{name}_simplified.csv')
